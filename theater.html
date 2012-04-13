@@ -107,35 +107,44 @@
 
         <script type="text/javascript">
 
-            dojo.require("dijit.layout.ContentPane");
-			dojo.require("dijit.layout.TabContainer");
-            dojo.require("dijit.layout.BorderContainer");
-            dojo.require("dijit.layout.AccordionContainer");
-			dojo.require("esri.dijit.Legend");
-            dojo.require("esri.map");
-            dojo.require("esri.tasks.find");
-            dojo.require("esri.tasks.query");
-            dojo.require("dijit.form.Form");
-            dojo.require("dijit.form.CheckBox");
-            dojo.require("dijit.form.Button");
-			dojo.require("esri.dijit.TimeSlider");
-			dojo.require("dijit.form.NumberTextBox");
-            dojo.addOnLoad(init);
-
-            var map, queryTask, query;
-            var symbol, infoTemplate;
-            var featureSet;
-
+		dojo.require("dijit.layout.ContentPane");
+		dojo.require("dijit.layout.TabContainer");
+		dojo.require("dijit.layout.BorderContainer");
+		dojo.require("dijit.layout.AccordionContainer");
+		dojo.require("esri.dijit.Legend");
+		dojo.require("esri.map");
+		dojo.require("esri.tasks.find");
+		dojo.require("esri.tasks.query");
+		dojo.require("dijit.form.Form");
+		dojo.require("dijit.form.CheckBox");
+		dojo.require("dijit.form.Button");
+		dojo.require("esri.dijit.TimeSlider");
+		dojo.require("dijit.form.NumberTextBox");
+		dojo.addOnLoad(init);
+		// When the web page is loaded, dojo will call "init" function first which is defined below.
+		var map, queryTask, query;
+		var symbol, infoTemplate;
+		var featureSet;
+		// Those are global variables. They are so bad.
             
-			function toggleMenu(menu, objID) {
-				if (!document.getElementById) return;
-				
+		/*
+			toggleMenu is the callback function related to the query menu shown on the right of the web page.
+			This function is responsible for the changes of "+" and "-" when the user clicks on the "+" or "-".
+			It displays or hides the corresponding query selection menu.
+		*/
+		function toggleMenu(menu, objID) {
+			if (!document.getElementById) return;
+				// the first line is supported by Firefox, Chrome, but not window.
 				var ob = document.getElementById(objID).style;
+				//
 				ob.display = (ob.display == 'block')?'none': 'block';
 				menu.innerHTML = (ob.display == 'block')? menu.innerHTML.replace("+","–") : menu.innerHTML.replace("–","+") ;
 			}
-			
-            function init(){
+		/*
+			This is the callback function when the web page is loaded. 		
+		
+		*/
+		function init(){
                 // load the map
 
                 map = new esri.Map("mapPane", {"logo":false});
