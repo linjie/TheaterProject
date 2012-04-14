@@ -12,13 +12,14 @@
 		dojo.require("dijit.form.Button");
 		dojo.require("esri.dijit.TimeSlider");
 		dojo.require("dijit.form.NumberTextBox");
+		
 		dojo.addOnLoad(init);
 		// When the web page is loaded, dojo will call "init" function first which is defined below.
-		var map, queryTask, query;
-		var symbol, infoTemplate;
-		var featureSet;
-		// Those are global variables. They are so bad.
-            
+		
+		var map;
+	
+	
+		
 		/*
 			toggleMenu is the callback function related to the query menu shown on the right of the web page.
 			This function is responsible for the changes of "+" and "-" when the user clicks on the "+" or "-".
@@ -45,18 +46,7 @@
                 var basemapURL = "https://arcgis.its.carleton.edu/ArcGIS/rest/services/ItalyTheaters/MapServer";
                 var basemap = new esri.layers.ArcGISDynamicMapServiceLayer(basemapURL);
                 map.addLayer(basemap);
-
-
-
-                queryTask = new esri.tasks.QueryTask("https://arcgis.its.carleton.edu/ArcGIS/rest/services/ItalyTheaters/MapServer/0");
-
-                //create a query and specify the parameters
-
-                query = new esri.tasks.Query();
-
-                query.returnGeometry = true;
-                query.outFields = ["Name","Style", "Type","Province","Town","Cavea_2","Seating_2", "Year_Early", "Year_Late"];
-				       
+	       
 				//dojo.connect(map,'onLayersAddResult',initSlider);
 			
               
@@ -171,10 +161,8 @@
 					querySQL = subquery;
 				}
 				//alert(querySQL);
-			
-				
-				return querySQL;
-			
+
+				return querySQL;			
 			}
 			
 			function submitQuery() {
@@ -203,8 +191,15 @@
 			}
 			
             function executeQuery(querySQL){
-                //map.infoWindow.hide();
-                map.graphics.clear();
+				map.graphics.clear();
+				var queryTask, query;
+				queryTask = new esri.tasks.QueryTask("https://arcgis.its.carleton.edu/ArcGIS/rest/services/ItalyTheaters/MapServer/0");
+				
+				query = new esri.tasks.Query();
+                query.returnGeometry = true;
+                query.outFields = ["Name","Style", "Type","Province","Town","Cavea_2","Seating_2", "Year_Early", "Year_Late"];
+         
+                
                 query.where = querySQL;
 			//	alert(querySQL);
                 //Execute query and call showResults on completion
