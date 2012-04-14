@@ -2,7 +2,7 @@
 		dojo.require("dijit.layout.ContentPane");
 		dojo.require("dijit.layout.TabContainer");
 		dojo.require("dijit.layout.BorderContainer");
-		dojo.require("dijit.layout.AccordionContainer");
+		dojo.require("dijit.layout.AccordionContainer"); //we don't use this currently
 		dojo.require("esri.dijit.Legend");
 		dojo.require("esri.map");
 		dojo.require("esri.tasks.find");
@@ -27,11 +27,12 @@
 		*/
 		function toggleMenu(menu, objID) {
 			if (!document.getElementById) return;
-				// the first line is supported by Firefox, Chrome, but not window.
+				// the first line is supported by Firefox, Chrome, but not Internet Explorer.
 				var ob = document.getElementById(objID).style;
 				//
 				ob.display = (ob.display == 'block')?'none': 'block';
-				menu.innerHTML = (ob.display == 'block')? menu.innerHTML.replace("+","–") : menu.innerHTML.replace("–","+") ;
+				//the next line is messed up. We want an ndash, not --, but I can't get it to recognize it properly.
+				menu.innerHTML = (ob.display == 'block')? menu.innerHTML.replace("+","--") : menu.innerHTML.replace("--","+") ;
 			}
 		/*
 			This is the callback function when the web page is loaded. 		
@@ -41,7 +42,7 @@
                 // load the map
 
                 map = new esri.Map("mapPane", {"logo":false});
-				var legendLayers = [];
+				var legendLayers = []; //we don't ever use this list, and as far as I can tell our map only has one layer
 				
                 var basemapURL = "https://arcgis.its.carleton.edu/ArcGIS/rest/services/ItalyTheaters/MapServer";
                 var basemap = new esri.layers.ArcGISDynamicMapServiceLayer(basemapURL);
@@ -56,14 +57,15 @@
 			}
 			
 			function initSlider(results) {
+				//Make a time slider to display theaters present during the queried time period
 				var map = this;
 				//var timeSlider = new esri.dijit.TimeSlider({style: "width: 1000px;"},document.getElementById("timesliderPane"));
 				var timeSlider = new esri.dijit.TimeSlider({style: "width: 90%;"},dojo.byId("timesliderDiv"));
 				map.setTimeSlider(timeSlider);
 				var timeExtent = new esri.TimeExtent();
 				timeExtent.startTime = new Date(0,0,1);
-				timeExtent.startTime.setFullYear('-500');
-				timeExtent.endTime = dojo.date.add(timeExtent.startTime,"year", 1000);
+				timeExtent.startTime.setFullYear('-500'); //time slider starts at 500BCE
+				timeExtent.endTime = dojo.date.add(timeExtent.startTime,"year", 1000); //ends at 500CE
 				timeSlider.setThumbCount(2);
 				// change unit later
 				timeSlider.createTimeStopsByTimeInterval(timeExtent,10,'esriTimeUnitsYears');
@@ -71,7 +73,7 @@
 				timeSlider.setThumbMovingRate(4000);
 				timeSlider.startup();
 				
-				var labels = dojo.map(timeSlider.timeStops, function(timeStop,i){ 
+				var labels = dojo.map(timeSlider.timeStops, function(timeStop,i){ //this map is a programming map, not a geographic map
 				if(i%5 === 0){
 					var year = timeStop.getUTCFullYear();
 					if (year==-500){
@@ -88,7 +90,7 @@
 				}
 				});      
         
-				timeSlider.setLabels(labels);
+				timeSlider.setLabels(labels); //is labels just a list of strings? Wouldn't it be easier to build with a normal for loop?
         
 				dojo.connect(timeSlider, "onTimeExtentChange", function(timeExtent) {
 				var startValString = timeExtent.startTime.getUTCFullYear(); //parse it later to display BC/AD
@@ -108,21 +110,21 @@
             function ConstructQuery(){
 			var legend = document.getElementById("legendDiv");
 					legend.innerHTML = "";
-				var querySQL = "";
+				var querySQL = ""; //this is what we return, will be an SQL query
 				var attributeList = ["styleAll", "typeAll", "locationAll"];
-				var sqlNameList = ["Style", "Type", "Province"];
+				var sqlNameList = ["Style", "Type", "Province"]; //Why do we have two of the same lists? This seems unecessary...
 				var divNameList = ["Style", "Type", "Province"];
 				var nameList = ['Greek', 'Roman', 'Unknown'];
 				var htmlColors =["rgb(27,158,119)","rgb(217,95,2)","rgb(117,112,179)","rgb(0,255,0)","rgb(173,255,47)","rgb(160,32,240)","rgb(0,100,0)","rgb(255,20,147)"];
 				for (var j=0; j<3; j++) {
-					var boo = document.getElementById("menu_"+divNameList[j]).style;
-					if (boo.display == "none"){
+					var boo = document.getElementById("menu_"+divNameList[j]).style; //I like my name but maybe we can call this something more descriptive?
+					if (boo.display == "none"){ //if the current menu category is not used, we don't care about it
 						continue;
 					}
 					var nodelist = document.getElementsByName(attributeList[j]);
 					
 					var tempQuery = "";			
-					if (dijit.byId(attributeList[j]).checked) {	
+					if (dijit.byId(attributeList[j]).checked) {	//query all in a specific category
 						
 						for (var i=0; i<nodelist.length; i++) {
 							tempQuery += sqlNameList[j] + " = '" + nodelist[i].value+"' OR ";
@@ -150,7 +152,7 @@
 						querySQL += "(" + tempQuery + ") AND ";
 					}	
 				}
-				var subquery = addSize();
+				var subquery = addSize(); //will add theater seating info
 				if (querySQL!=""){
 					if (subquery ==""){
 						querySQL = querySQL.slice(0, querySQL.length-4);
@@ -165,12 +167,12 @@
 				return querySQL;			
 			}
 			
-			function submitQuery() {
+			function submitQuery() { //executes the SQL query
 	
 				executeQuery(ConstructQuery());
 			}
 
-			function makeSymbol(color, style) {
+			function makeSymbol(color, style) { //constructs markers for the map in different colors and shapes. We should add code to change size based in seating
 				var symbol = new esri.symbol.SimpleMarkerSymbol();
 				if (style == 'CIRCLE'){
 					symbol.style = esri.symbol.SimpleMarkerSymbol.STYLE_CIRCLE;
@@ -194,7 +196,7 @@
 				map.graphics.clear();
 				var queryTask, query;
 				queryTask = new esri.tasks.QueryTask("https://arcgis.its.carleton.edu/ArcGIS/rest/services/ItalyTheaters/MapServer/0");
-				
+				//queryTasks executes queries
 				query = new esri.tasks.Query();
                 query.returnGeometry = true;
                 query.outFields = ["Name","Style", "Type","Province","Town","Cavea_2","Seating_2", "Year_Early", "Year_Late"];
@@ -217,7 +219,7 @@
 					//}
 					//alert(str);
 					
-                    var infoTemplate = new esri.InfoTemplate("${Name}", "${*}");
+                    var infoTemplate = new esri.InfoTemplate("${Name}", "${*}"); //infoTemplate is used to show the information about a theater when it is clicked on the map
                    //var legend = document.getElementById("legendDiv");
 					//legend.innerHTML = "";
 					var colors=[[27,158,119,0.75],[217,95,2,0.75],[117,112,179,0.75],[0,255,0,0.5],[173,255,47,0.5],[160,32,240,0.5],[0,100,0,0.5],[255,20,147,0.5]];
@@ -260,8 +262,6 @@
 							}
 							
 					
-						
-						
 						/*if (style=="" || style=="undefined"){
 							continue;
 						}*/
@@ -297,7 +297,7 @@
 
             function addSize(){
 					
-					var boo = document.getElementById("menu4").style;
+					var boo = document.getElementById("menu_Size").style;
 					//alert(boo);
 					if (boo.display == "none"){
 						return "";
