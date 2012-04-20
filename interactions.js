@@ -225,15 +225,15 @@
 					var colors=[[27,158,119,0.75],[217,95,2,0.75],[117,112,179,0.75],[0,255,0,0.5],[173,255,47,0.5],[160,32,240,0.5],[0,100,0,0.5],[255,20,147,0.5]];
 					var htmlColors =["rgb(27,158,119)","rgb(217,95,2)","rgb(117,112,179)","rgb(0,255,0)","rgb(173,255,47)","rgb(160,32,240)","rgb(0,100,0)","rgb(255,20,147)"];
 					var shapes = ['CIRCLE', 'DIAMOND', 'SQUARE'];
-					var colorList = {};
-					var shapeList = {};
+					var colorDict = {};
+					var shapeDict = {};
 					var nameList = ['Greek', 'Roman', 'Unknown'];
 					var typeList = ['Open-air', 'Roofed', 'Unknown'];
 					for (var i=0; i<nameList.length; i++) {
 							
-						colorList[nameList[i]] = colors[i];
+						colorDict[nameList[i]] = colors[i];
 						//this changes the shapes with the color...how to seperate them?
-						shapeList[typeList[i]] = shapes[i];
+						shapeDict[typeList[i]] = shapes[i];
 						
 						//legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="size:5px;background-color:'+htmlColors[i]+';">'+nameList[i]+'</input><br>';
 							// too many problems!!! hope to change colors to HEX format! 
@@ -246,32 +246,33 @@
 					
 					
                     var numFeatures = resultFeatures.length;
-					var colorNum = 0;
+					var colorNum = 0; //We never use this variable...is there a plan for it or can we get rid of it?
                     for (var i = 0; i < numFeatures; i++) {
+						//this loop will ensure that the same styles and types of theaters will always be paired with the same shapes and colors on the map
                         var graphic = resultFeatures[i];
 						var style = resultFeatures[i].attributes.Style;
 						var type = resultFeatures[i].attributes.Type;
-						
-						//alert( type);
-	                  
+					
 						if (nameList.indexOf(style) <= -1) {
 							style = 'Unknown';
 						}
 						if (typeList.indexOf(type) <= -1) {
-								type = 'Unknown';
-							}
+							type = 'Unknown';
+						}
 							
 					
 						/*if (style=="" || style=="undefined"){
 							continue;
 						}*/
 						
-						var symbol = makeSymbol(colorList[style], shapeList[type]);	
+						var symbol = makeSymbol(colorDict[style], shapeDict[type]);	
 						
                         graphic.setSymbol(symbol);
                         graphic.setInfoTemplate(infoTemplate);
                         map.graphics.add(graphic);
                     }
+					
+					//QueryLegendPane contains the tabs legendPane and queryPane
 					var legendPane = dijit.byId("legendPane");
 					var queryPane = dijit.byId("QueryPane");
 					//var newButton = new dijit.form.Button({title:"backToLegend",content:"Back to Legend", type:"Button",onclick:"changeTab('legendPane')"});
@@ -281,8 +282,8 @@
 					//queryPane.setAttribute('selected',false);
 					queryLegendContainer.selectChild(legendPane);
 					
-					for (key in symbols){
-						symbols[key];
+					for (key in symbol){
+						symbol[key];
 						
 					}
                 });

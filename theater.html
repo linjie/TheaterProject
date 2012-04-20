@@ -14,7 +14,11 @@
             }
 
             body {
-                background-color: #EFEFDE;
+                background-color: #FFFAEB;
+				font-size: 90%;
+				font-family: Arial, Helvetica, sans-serif;
+				letter-spacing: 2px;
+				line-height: 2;
                 overflow: hidden;
             }
 
@@ -28,9 +32,11 @@
                 height: 40px;
                 text-align: center;
                 vertical-align: middle;
-                color: #0F0063;
+                color: #3B3B3B;
+				background-color: #FFFAEB;
                 font-size: xx-large;
-				font-family: font-family: 'Bookman Old Style', serif;
+				font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
+				letter-spacing:5px;
             }
 
             #mapPane {
@@ -50,6 +56,13 @@
 				position:relative;
 				top:-10px;
             }
+			
+			.carletonInfo {
+				font-size: small;
+				position:absolute;
+				top: 10px;
+				right: 10px;
+			}
 
         </style>
 
@@ -75,6 +88,8 @@
             <!-- TOP TITLE PANE-->
             <div id="titlePane" dojotype="dijit.layout.ContentPane" region="top">
                 Ancient Theaters in Italy
+				<div class="carletonInfo">Carleton College</div>
+				<div class="carletonInfo" style="top:25px;">Northfield, MN</div>
             </div>
             <!--CENTER MAP PANE-->
             <div id="mapPane" dojotype="dijit.layout.ContentPane" region="center">
@@ -86,7 +101,7 @@
 					<div id="queryForm" dojotype="dijit.form.Form" method="post" action="">
 						<div class="mC">
 							<div class="mH"
-								onclick="toggleMenu(this,'menu_Style')">+ Theater Styles</div>
+								onclick="toggleMenu(this,'menu_Style')">+ <b>Theater Styles</b></div>
 								<div id="menu_Style" class="mL" style="display:None;">
 									&nbsp; &nbsp;
 									<input id="styleAll"  dojotype="dijit.form.CheckBox" value="AllStyles" onclick="clicked('styleAll')"/>
@@ -112,7 +127,7 @@
 									<label for="styleUnknown">
 								</div>
 							<div class="mH"
-								onclick="toggleMenu(this,'menu_Type')">+ Theater Types</div>
+								onclick="toggleMenu(this,'menu_Type')">+ <b>Theater Types</b></div>
 								<div id="menu_Type" class="mL" style="display:None;">
 									&nbsp; &nbsp;
 									<input id="typeAll" dojotype="dijit.form.CheckBox" value="AllTypes" onclick="clicked('typeAll')"/>
@@ -137,7 +152,7 @@
 									</label>
 								</div>
 							<div class="mH"
-								onclick="toggleMenu(this,'menu_Province')">+ Locations</div>
+								onclick="toggleMenu(this,'menu_Province')">+ <b>Locations</b></div>
 								<div id="menu_Province" class="mL" style="display:None;">
 									&nbsp; &nbsp;
 									<input id="locationAll" dojotype="dijit.form.CheckBox" value="AllLocations" onclick="clicked('locationAll')"/>							
@@ -164,14 +179,14 @@
                         
 
 							<div class="mH"
-								onclick="toggleMenu(this,'menu4')">+ Size</div>
-								<div id="menu4" class="mL" style="display:None;">
+								onclick="toggleMenu(this,'menu_Size')">+ <b>Size</b></div>
+								<div id="menu_Size" class="mL" style="display:None;">
                             
 							<table border="0">
 							<tr>
-								<td><b>Size</b></td>
-								<td>min</td>
-								<td>max</td>
+								<td></td>
+								<td>Min</td>
+								<td>Max</td>
 							</tr>
 							<tr>
 								<td>Cavea</td>
@@ -218,16 +233,11 @@
             <!--BOTTOM TIME SLIDER PANE-->
 			
             <div id="timesliderPane"  data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'bottom'">
-				
-				
-				<div style="height:28px;padding-bottom 8px;text-align:center;">
-					
-					Start year <input id="start_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/> &nbsp; &nbsp; &nbsp; End year <input id="end_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/>
-					
-				</div>
 				<div id="timesliderDiv">
-				</div>
 			</div>
+            
+
+        </div>
 
     </body>
 
