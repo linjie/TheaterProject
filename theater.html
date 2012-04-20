@@ -24,15 +24,13 @@
 
             #pageContainer {
                 width: 100%;
-                height: 100%
+                height: 100%;
             }
 
             #titlePane {
                 border-style: none;
                 height: 40px;
                 text-align: center;
-                vertical-align: middle;
-                color: #3B3B3B;
 				background-color: #FFFAEB;
                 font-size: xx-large;
 				font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
@@ -63,6 +61,11 @@
 				top: 10px;
 				right: 10px;
 			}
+			
+			.title {
+				position: relative;
+				bottom:10px;
+			}
 
         </style>
 
@@ -87,7 +90,7 @@
         <div id="pageContainer" dojotype="dijit.layout.BorderContainer" design="headline">
             <!-- TOP TITLE PANE-->
             <div id="titlePane" dojotype="dijit.layout.ContentPane" region="top">
-                Ancient Theaters in Italy
+                <div class="title">Ancient Theaters in Italy</div>
 				<div class="carletonInfo">Carleton College</div>
 				<div class="carletonInfo" style="top:25px;">Northfield, MN</div>
             </div>
