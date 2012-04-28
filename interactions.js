@@ -46,51 +46,53 @@
 				
                 var basemapURL = "https://arcgis.its.carleton.edu/ArcGIS/rest/services/ItalyTheaters/MapServer";
                 var basemap = new esri.layers.ArcGISDynamicMapServiceLayer(basemapURL);
-                map.addLayer(basemap);
-	       
-				//dojo.connect(map,'onLayersAddResult',initSlider);
+                map.addLayer(basemap);			
 			
-              
-				dojo.connect(map, "onLayerAddResult", initSlider);
+				var timeExtent = new esri.TimeExtent();
+				timeExtent.startTime = new Date(0,0,1);
+				timeExtent.startTime.setFullYear('-500');
+				timeExtent.endTime = dojo.date.add(timeExtent.startTime,"year", 1000);
+			
+				initSlider(timeExtent);
+				//dojo.connect(map, "onLayerAddResult", initSlider);
 
 				
 			}
 			
-			function initSlider(results) {
-				//Make a time slider to display theaters present during the queried time period
-				var map = this;
-				//var timeSlider = new esri.dijit.TimeSlider({style: "width: 1000px;"},document.getElementById("timesliderPane"));
-				var timeSlider = new esri.dijit.TimeSlider({style: "width: 90%;"},dojo.byId("timesliderDiv"));
+			function initSlider(timeExtent) {
+				//alert(dojo.byId("timesliderDiv"));
+				var tsDiv = dojo.create("div", null, dojo.byId('timesliderDiv'));
+				//alert(tsDiv);
+				var timeSlider = new esri.dijit.TimeSlider({style: "width: 90%;",id:'timeSlider'},tsDiv);
 				map.setTimeSlider(timeSlider);
-				var timeExtent = new esri.TimeExtent();
-				timeExtent.startTime = new Date(0,0,1);
-				timeExtent.startTime.setFullYear('-500'); //time slider starts at 500BCE
-				timeExtent.endTime = dojo.date.add(timeExtent.startTime,"year", 1000); //ends at 500CE
+
 				timeSlider.setThumbCount(2);
+				
 				// change unit later
 				timeSlider.createTimeStopsByTimeInterval(timeExtent,10,'esriTimeUnitsYears');
 				timeSlider.setThumbIndexes([0,1]);
 				timeSlider.setThumbMovingRate(4000);
 				timeSlider.startup();
 				
-				var labels = dojo.map(timeSlider.timeStops, function(timeStop,i){ //this map is a programming map, not a geographic map
+				var labels = dojo.map(timeSlider.timeStops, function(timeStop,i){ 
 				if(i%5 === 0){
 					var year = timeStop.getUTCFullYear();
-					if (year==-500){
-						return "500BCE";
-					}
-					if  (year<0) {return -year}
-					if  (year==500) {
-						return "500CE";
-					}
-					if (year>=0) {return year}
+					// if (year==-500){
+						// return "500BCE";
+					// }
+					// if  (year<0) {return -year}
+					// if  (year==500) {
+						// return "500CE";
+					// }
+					// if (year>=0) {return year}
+					return year;
 				}
 				else{
 					return "";
 				}
 				});      
-        
-				timeSlider.setLabels(labels); //is labels just a list of strings? Wouldn't it be easier to build with a normal for loop?
+				//alert("labels in init function"+labels);
+				timeSlider.setLabels(labels);
         
 				dojo.connect(timeSlider, "onTimeExtentChange", function(timeExtent) {
 				var startValString = timeExtent.startTime.getUTCFullYear(); //parse it later to display BC/AD
@@ -105,7 +107,31 @@
 				});
 			}
 			
-			
+			function updateSlider() {
+				
+				//alert("update");
+				var startYear = dojo.byId('start_year').value;
+				var endYear = dojo.byId('end_year').value;
+				//@TODO: check here the validity of start_year and end_year
+				var timeExtent = new esri.TimeExtent();
+				timeExtent.startTime = new Date(0,0,1);
+				timeExtent.startTime.setFullYear(startYear);
+				timeExtent.endTime = dojo.date.add(timeExtent.startTime,"year", Number(endYear)-Number(startYear));
+				//alert("after creating timeExtent");				
+		
+				
+				if (dijit.byId('timeSlider')) {
+					//alert("about to destroy");
+					dijit.byId('timeSlider').destroy();
+				}
+				//alert("after destroy"); 
+				initSlider(timeExtent);
+				
+				
+				
+	
+				
+			}
 			
             function ConstructQuery(){
 			var legend = document.getElementById("legendDiv");
