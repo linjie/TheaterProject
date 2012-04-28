@@ -38,12 +38,16 @@
             }
 
             #mapPane {
-                width: 600px;
-				letter-spacing:1px;
-				line-height: 1.25;
+                width: 600px
             }
 			
-			
+			.user {
+				line-height: 1;
+				letter-spacing: 1px;
+				position: relative;
+				top: 10px;
+			}
+
             .numberBox {
 				width: 50px
 			}
@@ -53,7 +57,7 @@
             }
             
             #timesliderPane {
-                height: 80px;
+                height: 50px;
 				position:relative;
 				top:-10px;
             }
@@ -65,9 +69,15 @@
 				right: 10px;
 			}
 			
-			.mainTitle {
+			.title {
 				position: relative;
 				bottom:10px;
+			}
+			
+			h3 {
+				line-height: normal;
+				position: relative;
+				top: 10px;
 			}
 
         </style>
@@ -93,7 +103,7 @@
         <div id="pageContainer" dojotype="dijit.layout.BorderContainer" design="headline">
             <!-- TOP TITLE PANE-->
             <div id="titlePane" dojotype="dijit.layout.ContentPane" region="top">
-                <div class="mainTitle">Ancient Theaters in Italy</div>
+                <div class="title">Ancient Theaters in Italy</div>
 				<div class="carletonInfo">Carleton College</div>
 				<div class="carletonInfo" style="top:25px;">Northfield, MN</div>
             </div>
@@ -223,7 +233,7 @@
                     </div>
 
                     <div id="legendPane" dojotype="dijit.layout.ContentPane" title="Map Legend">
-						 Legends will show up here after you make a query.<br>
+						 Legend will show up here after you make a query.<br>
 						<div id="legendDiv">
 						
 						 </div>
@@ -239,19 +249,11 @@
             <!--BOTTOM TIME SLIDER PANE-->
 			
             <div id="timesliderPane"  data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'bottom'">
-				<div style="height:28px;padding-bottom 8px;text-align:center;">
-					
-					Start year <input id="start_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/> &nbsp; &nbsp; &nbsp; End year <input id="end_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/>
-					&nbsp; &nbsp; &nbsp;
-					<button id="OK" dojotype="dijit.form.Button" type="button" onclick="updateSlider()">
-					OK
-					</button>
-				</div>
 				<div id="timesliderDiv">
-				</div>
+			</div>
             
 
-			</div>
+        </div>
 
     </body>
 

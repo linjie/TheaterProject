@@ -46,53 +46,51 @@
 				
                 var basemapURL = "https://arcgis.its.carleton.edu/ArcGIS/rest/services/ItalyTheaters/MapServer";
                 var basemap = new esri.layers.ArcGISDynamicMapServiceLayer(basemapURL);
-                map.addLayer(basemap);			
+                map.addLayer(basemap);
+	       
+				//dojo.connect(map,'onLayersAddResult',initSlider);
 			
-				var timeExtent = new esri.TimeExtent();
-				timeExtent.startTime = new Date(0,0,1);
-				timeExtent.startTime.setFullYear('-500');
-				timeExtent.endTime = dojo.date.add(timeExtent.startTime,"year", 1000);
-			
-				initSlider(timeExtent);
-				//dojo.connect(map, "onLayerAddResult", initSlider);
+              
+				dojo.connect(map, "onLayerAddResult", initSlider);
 
 				
 			}
 			
-			function initSlider(timeExtent) {
-				//alert(dojo.byId("timesliderDiv"));
-				var tsDiv = dojo.create("div", null, dojo.byId('timesliderDiv'));
-				//alert(tsDiv);
-				var timeSlider = new esri.dijit.TimeSlider({style: "width: 90%;",id:'timeSlider'},tsDiv);
+			function initSlider(results) {
+				//Make a time slider to display theaters present during the queried time period
+				var map = this;
+				//var timeSlider = new esri.dijit.TimeSlider({style: "width: 1000px;"},document.getElementById("timesliderPane"));
+				var timeSlider = new esri.dijit.TimeSlider({style: "width: 90%;"},dojo.byId("timesliderDiv"));
 				map.setTimeSlider(timeSlider);
-
+				var timeExtent = new esri.TimeExtent();
+				timeExtent.startTime = new Date(0,0,1);
+				timeExtent.startTime.setFullYear('-500'); //time slider starts at 500BCE
+				timeExtent.endTime = dojo.date.add(timeExtent.startTime,"year", 1000); //ends at 500CE
 				timeSlider.setThumbCount(2);
-				
 				// change unit later
 				timeSlider.createTimeStopsByTimeInterval(timeExtent,10,'esriTimeUnitsYears');
 				timeSlider.setThumbIndexes([0,1]);
 				timeSlider.setThumbMovingRate(4000);
 				timeSlider.startup();
 				
-				var labels = dojo.map(timeSlider.timeStops, function(timeStop,i){ 
+				var labels = dojo.map(timeSlider.timeStops, function(timeStop,i){ //this map is a programming map, not a geographic map
 				if(i%5 === 0){
 					var year = timeStop.getUTCFullYear();
-					// if (year==-500){
-						// return "500BCE";
-					// }
-					// if  (year<0) {return -year}
-					// if  (year==500) {
-						// return "500CE";
-					// }
-					// if (year>=0) {return year}
-					return year;
+					if (year==-500){
+						return "500BCE";
+					}
+					if  (year<0) {return -year}
+					if  (year==500) {
+						return "500CE";
+					}
+					if (year>=0) {return year}
 				}
 				else{
 					return "";
 				}
 				});      
-				//alert("labels in init function"+labels);
-				timeSlider.setLabels(labels);
+        
+				timeSlider.setLabels(labels); //is labels just a list of strings? Wouldn't it be easier to build with a normal for loop?
         
 				dojo.connect(timeSlider, "onTimeExtentChange", function(timeExtent) {
 				var startValString = timeExtent.startTime.getUTCFullYear(); //parse it later to display BC/AD
@@ -107,31 +105,7 @@
 				});
 			}
 			
-			function updateSlider() {
-				
-				//alert("update");
-				var startYear = dojo.byId('start_year').value;
-				var endYear = dojo.byId('end_year').value;
-				//@TODO: check here the validity of start_year and end_year
-				var timeExtent = new esri.TimeExtent();
-				timeExtent.startTime = new Date(0,0,1);
-				timeExtent.startTime.setFullYear(startYear);
-				timeExtent.endTime = dojo.date.add(timeExtent.startTime,"year", Number(endYear)-Number(startYear));
-				//alert("after creating timeExtent");				
-		
-				
-				if (dijit.byId('timeSlider')) {
-					//alert("about to destroy");
-					dijit.byId('timeSlider').destroy();
-				}
-				//alert("after destroy"); 
-				initSlider(timeExtent);
-				
-				
-				
-	
-				
-			}
+			
 			
             function ConstructQuery(){
 			var legend = document.getElementById("legendDiv");
@@ -151,11 +125,27 @@
 					
 					var tempQuery = "";			
 					if (dijit.byId(attributeList[j]).checked) {	//query all in a specific category
-						
 						for (var i=0; i<nodelist.length; i++) {
 							tempQuery += sqlNameList[j] + " = '" + nodelist[i].value+"' OR ";
 							if (j==0){
-							legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="border-radius:10px; border: 1px solid #000;height: 12px; width: 12px;background-color:'+htmlColors[i]+';">&nbsp;'+nodelist[i].value+'</input><br>';
+								if (i==0){
+									legend.innerHTML +='<h3>Symbol color</h3>'
+								}
+							legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="border-radius:10px; border: 0px solid #000;height: 12px; width: 12px;background-color:'+htmlColors[i]+';">&nbsp;'+nodelist[i].value+'</input><br>';
+							}
+							else if (j==1){
+								if (i==0) {
+									legend.innerHTML +='<h3>Symbol shape</h3>'
+								}
+								if (nodelist[i].value == 'Open-air'){
+									legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="border-radius:10px; border: 1px solid #000;height: 12px; width: 12px;background-color: white;">&nbsp;'+nodelist[i].value+'</input><br>';
+								}
+								else if (nodelist[i].value == 'Roofed'){
+									legend.innerHTML +='<img src="roofedTypeIcon.jpg"/> '+nodelist[i].value+'<br>';
+								}
+								else {
+									legend.innerHTML +='<img src="unknownTypeIcon.jpg"/> '+nodelist[i].value+'<br>';
+								}
 							}
 						}
 						tempQuery += sqlNameList[j] + " = ''";
@@ -165,8 +155,25 @@
 						for (var i=0; i<nodelist.length; i++) {							
 							if (dijit.byId(nodelist[i].id).checked) {		
 								if (j==0){
-									legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="border-radius:12px; border: 1px solid #000;height: 12px; width: 12px;background-color:'+htmlColors[i]+';">&nbsp;'+nodelist[i].value+'</input><br>';
+									if (i==0){
+										legend.innerHTML +='<h3>Symbol color</h3>'
+									}
+									legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="border-radius:12px; border: 0px solid #000;height: 12px; width: 12px;background-color:'+htmlColors[i]+';">&nbsp;'+nodelist[i].value+'</input><br>';
 									tempQuery += sqlNameList[j] + " = '" + nodelist[i].value+"' OR ";
+								}
+								else if (j==1){
+									if (i==0) {
+										legend.innerHTML +='<h3>Symbol shape</h3>'
+									}
+									if (nodelist[i].value == 'Open-air'){
+										legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="border-radius:10px; border: 1px solid #000;height: 12px; width: 12px;background-color: white;">&nbsp;'+nodelist[i].value+'</input><br>';
+									}
+									else if (nodelist[i].value == 'Roofed'){
+										legend.innerHTML +='<img src="roofedTypeIcon.jpeg"/> '+nodelist[i].value+'<br>';
+									}
+									else {
+										legend.innerHTML +='<img src="unknownTypeIcon.jpg"/> '+nodelist[i].value+'<br>';
+									}
 								}
 							}
 						}
