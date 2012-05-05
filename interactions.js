@@ -159,7 +159,6 @@
 										legend.innerHTML +='<h3>Symbol color</h3>'
 									}
 									legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="border-radius:12px; border: 0px solid #000;height: 12px; width: 12px;background-color:'+htmlColors[i]+';">&nbsp;'+nodelist[i].value+'</input><br>';
-									tempQuery += sqlNameList[j] + " = '" + nodelist[i].value+"' OR ";
 								}
 								else if (j==1){
 									if (i==0) {
@@ -169,12 +168,13 @@
 										legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="border-radius:10px; border: 1px solid #000;height: 12px; width: 12px;background-color: white;">&nbsp;'+nodelist[i].value+'</input><br>';
 									}
 									else if (nodelist[i].value == 'Roofed'){
-										legend.innerHTML +='<img src="roofedTypeIcon.jpeg"/> '+nodelist[i].value+'<br>';
+										legend.innerHTML +='<img src="roofedTypeIcon.jpg"/> '+nodelist[i].value+'<br>';
 									}
 									else {
 										legend.innerHTML +='<img src="unknownTypeIcon.jpg"/> '+nodelist[i].value+'<br>';
 									}
 								}
+								tempQuery += sqlNameList[j] + " = '" + nodelist[i].value+"' OR ";
 							}
 						}
 						if (tempQuery!=""){
