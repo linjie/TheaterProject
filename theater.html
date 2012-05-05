@@ -57,7 +57,7 @@
             }
             
             #timesliderPane {
-                height: 50px;
+                height: 80px;
 				position:relative;
 				top:-10px;
             }
@@ -249,7 +249,18 @@
             <!--BOTTOM TIME SLIDER PANE-->
 			
             <div id="timesliderPane"  data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'bottom'">
+				<div style="height:28px;padding-bottom 8px;text-align:center;">
+					
+					Start year <input id="start_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/> &nbsp; &nbsp; &nbsp; End year <input id="end_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/>
+					&nbsp; &nbsp; &nbsp;
+					<button id="OK" dojotype="dijit.form.Button" type="button" onclick="updateSlider()">
+					OK
+					</button>
+				</div>
 				<div id="timesliderDiv">
+				</div>
+            
+
 			</div>
             
 
