@@ -17,7 +17,7 @@
 		// When the web page is loaded, dojo will call "init" function first which is defined below.
 		
 		var map;
-	
+		var feature;
 	
 		
 		/*
@@ -66,12 +66,12 @@
 				var timeSlider = new esri.dijit.TimeSlider({style: "width: 90%;",id:'timeSlider'},tsDiv);
 				map.setTimeSlider(timeSlider);
 
-				timeSlider.setThumbCount(2);
+				timeSlider.setThumbCount(1);
 				
 				// change unit later
 				timeSlider.createTimeStopsByTimeInterval(timeExtent,10,'esriTimeUnitsYears');
-				timeSlider.setThumbIndexes([0,1]);
-				timeSlider.setThumbMovingRate(4000);
+			//	timeSlider.setThumbIndexes([0,1]);
+				timeSlider.setThumbMovingRate(1000);
 				timeSlider.startup();
 				
 				var labels = dojo.map(timeSlider.timeStops, function(timeStop,i){ 
@@ -93,7 +93,110 @@
 				});      
 				//alert("labels in init function"+labels);
 				timeSlider.setLabels(labels);
-        
+				
+				var startValString = timeExtent.startTime.getUTCFullYear(); //parse it later to display BC/AD				
+				var endValString = timeExtent.endTime.getUTCFullYear();
+				var selected = ConstructQuery();
+				if  (selected!=""){
+					selected += " AND ";
+				}
+				selected += " (Year_Early <= "+ endValString+" AND Year_Late >="+ startValString +")";
+				alert("query constructed "+selected);
+				var queryTask, query;
+				queryTask = new esri.tasks.QueryTask("https://arcgis.its.carleton.edu/ArcGIS/rest/services/ItalyTheaters/MapServer/0");
+				//queryTasks executes queries
+				query = new esri.tasks.Query();
+                query.returnGeometry = true;
+                query.outFields = ["Name","Style", "Type","Province","Town","Cavea_2","Seating_2", "Year_Early", "Year_Late"];
+         
+                
+                query.where = selected;
+	
+				alert("before execute");
+				
+                queryTask.execute(query);
+				
+				dojo.connect(queryTask,"onComplete", function(fset){
+					var infoTemplate = new esri.InfoTemplate("${Name}", "${*}"); 
+					var colors=[[27,158,119,0.75],[217,95,2,0.75],[117,112,179,0.75],[0,255,0,0.5],[173,255,47,0.5],[160,32,240,0.5],[0,100,0,0.5],[255,20,147,0.5]];
+					var htmlColors =["rgb(27,158,119)","rgb(217,95,2)","rgb(117,112,179)","rgb(0,255,0)","rgb(173,255,47)","rgb(160,32,240)","rgb(0,100,0)","rgb(255,20,147)"];
+					var shapes = ['CIRCLE', 'DIAMOND', 'SQUARE'];
+					var colorDict = {};
+					var shapeDict = {};
+					var nameList = ['Greek', 'Roman', 'Unknown'];
+					var typeList = ['Open-air', 'Roofed', 'Unknown'];
+					for (var i=0; i<nameList.length; i++) {		
+						colorDict[nameList[i]] = colors[i];
+						//this changes the shapes with the color...how to seperate them?
+						shapeDict[typeList[i]] = shapes[i];
+					}
+			
+					var resultFeatures= fset.features;
+
+					var numFeatures = resultFeatures.length;
+					alert(numFeatures);
+					var hasDrawn = new Array();
+					for (var i=0; i<numFeatures; i++) {
+						hasDrawn[i] = false;
+					}
+					var graphicsList = new Array();
+					for (var i=0; i<numFeatures; i++) {
+						graphicsList[i] = resultFeatures[i];
+						var style = resultFeatures[i].attributes.Style;
+						var type = resultFeatures[i].attributes.Type;
+					
+						if (nameList.indexOf(style) <= -1) {
+							style = 'Unknown';
+						}
+						if (typeList.indexOf(type) <= -1) {
+							type = 'Unknown';
+						}
+				
+						var symbol = makeSymbol(colorDict[style], shapeDict[type]);	
+						
+						graphicsList[i].setSymbol(symbol);
+						graphicsList[i].setInfoTemplate(infoTemplate);
+					}
+				
+					// for( prop in feature) {alert(prop);}
+					// var str = "";
+					// for(prop in fset.features[0].attributes)
+					// {
+						// str+=prop + " value:"+ resultFeatures[0].attributes[prop]+"\n";//Concate prop and its value from object
+					// }
+					// alert(str);
+					dojo.connect(timeSlider, "onTimeExtentChange", function(timeExtent) {
+						var startYear = Number(timeExtent.endTime.getUTCFullYear()); //parse it later to display BC/AD				
+						
+						for (var i=0; i<numFeatures; i++) {
+							
+							if (Number(resultFeatures[i].attributes.Year_Early)<=startYear){
+								
+								if (!hasDrawn[i]) {
+									
+									map.graphics.add(graphicsList[i]);
+									hasDrawn[i] = true;
+								}
+							}
+							else if(hasDrawn[i]) {
+								map.graphics.remove(graphicsList[i]);
+								hasDrawn[i] = false;
+							}
+						}
+						
+						
+					});
+				});
+				
+				
+				//for( prop in feature) {alert(prop);}
+				//var str = "";
+				//	for(prop in fset.features[0].attributes)
+				//	{
+				//		str+=prop + " value:"+ resultFeatures[0].attributes[prop]+"\n";//Concate prop and its value from object
+				//	}
+				//	alert(str);
+				/*
 				dojo.connect(timeSlider, "onTimeExtentChange", function(timeExtent) {
 				var startValString = timeExtent.startTime.getUTCFullYear(); //parse it later to display BC/AD
 				
@@ -104,8 +207,9 @@
 				}
 				selected += " (Year_Early <= "+ endValString+" AND Year_Late >="+ startValString +")";
 				executeQuery(selected);
-				});
+				});*/
 			}
+			
 			
 			function updateSlider() {
 				
@@ -127,9 +231,6 @@
 				//alert("after destroy"); 
 				initSlider(timeExtent);
 				
-				
-				
-	
 				
 			}
 			
@@ -300,12 +401,7 @@
 							// too many problems!!! hope to change colors to HEX format! 
 							//Hope to match query. 
 					}
-				
-	
-							
-								
-					
-					
+
                     var numFeatures = resultFeatures.length;
 					var colorNum = 0; //We never use this variable...is there a plan for it or can we get rid of it?
                     for (var i = 0; i < numFeatures; i++) {
