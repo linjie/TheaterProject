@@ -79,6 +79,12 @@
 				position: relative;
 				top: 10px;
 			}
+			
+			.OKButton {
+				position: relative;
+				bottom: 4px;
+				left: 40px;
+			}
 
         </style>
 
@@ -116,7 +122,7 @@
                     <div id="QueryPane" dojotype="dijit.layout.ContentPane" title="Query the Theaters" selected="true">
 					<div id="queryForm" dojotype="dijit.form.Form" method="post" action="">
 						<div class="mC">
-							<div class="mH"
+							<div class="mH" style="cursor: pointer;"
 								onclick="toggleMenu(this,'menu_Style')">+ <b>Theater Styles</b></div>
 								<div id="menu_Style" class="mL" style="display:None;">
 									&nbsp; &nbsp;
@@ -142,7 +148,7 @@
 										Unknown
 									<label for="styleUnknown">
 								</div>
-							<div class="mH"
+							<div class="mH" style="cursor: pointer;"
 								onclick="toggleMenu(this,'menu_Type')">+ <b>Theater Types</b></div>
 								<div id="menu_Type" class="mL" style="display:None;">
 									&nbsp; &nbsp;
@@ -167,7 +173,7 @@
 										Unknown
 									</label>
 								</div>
-							<div class="mH"
+							<div class="mH" style="cursor: pointer;"
 								onclick="toggleMenu(this,'menu_Province')">+ <b>Locations</b></div>
 								<div id="menu_Province" class="mL" style="display:None;">
 									&nbsp; &nbsp;
@@ -192,9 +198,7 @@
 									</label>  									
 								</div>
 						</div>
-                        
-
-							<div class="mH"
+							<div class="mH" style="cursor: pointer;"
 								onclick="toggleMenu(this,'menu_Size')">+ <b>Size</b></div>
 								<div id="menu_Size" class="mL" style="display:None;">
                             
@@ -249,13 +253,15 @@
             <!--BOTTOM TIME SLIDER PANE-->
 			
             <div id="timesliderPane"  data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'bottom'">
-				<div style="height:28px;padding-bottom 8px;text-align:center;">
+				<div style="height:28px;padding-bottom 8px;text-align:center;position:relative;right: 100px;">
 					
-					Start year <input id="start_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/> &nbsp; &nbsp; &nbsp; End year <input id="end_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/>
-					&nbsp; &nbsp; &nbsp;
+					Start year <input id="start_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/> &nbsp; &nbsp; &nbsp; 
+					End year <input id="end_year"  class="numberBox" type="text" onkeypress="return onlyNumbers();"/>
+					<span class="OKButton">
 					<button id="OK" dojotype="dijit.form.Button" type="button" onclick="updateSlider()">
 					OK
 					</button>
+					</span>
 				</div>
 				<div id="timesliderDiv">
 				</div>

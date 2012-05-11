@@ -29,7 +29,6 @@
 			if (!document.getElementById) return;
 				// the first line is supported by Firefox, Chrome, but not Internet Explorer.
 				var ob = document.getElementById(objID).style;
-				//
 				ob.display = (ob.display == 'block')?'none': 'block';
 				//the next line is messed up. We want an ndash, not --, but I can't get it to recognize it properly.
 				menu.innerHTML = (ob.display == 'block')? menu.innerHTML.replace("+","--") : menu.innerHTML.replace("--","+") ;
@@ -76,7 +75,7 @@
 				
 				var labels = dojo.map(timeSlider.timeStops, function(timeStop,i){ 
 				if(i%5 === 0){
-					var year = timeStop.getUTCFullYear();
+					var year = timeStop.getUTCFullYear(); //should we add these labels back in at some point???
 					// if (year==-500){
 						// return "500BCE";
 					// }
@@ -91,7 +90,6 @@
 					return "";
 				}
 				});      
-				//alert("labels in init function"+labels);
 				timeSlider.setLabels(labels);
         
 				dojo.connect(timeSlider, "onTimeExtentChange", function(timeExtent) {
@@ -108,8 +106,6 @@
 			}
 			
 			function updateSlider() {
-				
-				//alert("update");
 				var startYear = dojo.byId('start_year').value;
 				var endYear = dojo.byId('end_year').value;
 				//@TODO: check here the validity of start_year and end_year
@@ -206,7 +202,7 @@
 							}
 						}
 						if (tempQuery!=""){
-							tempQuery = tempQuery.slice(0, tempQuery.length-3);
+							tempQuery = tempQuery.slice(0, tempQuery.length-3); //get rid of "OR" at end of query
 						}
 					}
 					if (tempQuery!=""){
@@ -216,7 +212,7 @@
 				var subquery = addSize(); //will add theater seating info
 				if (querySQL!=""){
 					if (subquery ==""){
-						querySQL = querySQL.slice(0, querySQL.length-4);
+						querySQL = querySQL.slice(0, querySQL.length-4); //get rid of "AND" at end of query
 					}else{
 						querySQL = querySQL + subquery;
 					}
@@ -240,9 +236,6 @@
 				}
 				else if (style == 'DIAMOND'){
 					symbol.style = esri.symbol.SimpleMarkerSymbol.STYLE_DIAMOND;
-				}
-				else if (style == 'X'){
-					symbol.style = esri.symbol.SimpleMarkerSymbol.STYLE_X;
 				}
 				else{
 					symbol.style = esri.symbol.SimpleMarkerSymbol.STYLE_SQUARE;
@@ -280,6 +273,7 @@
 					//}
 					//alert(str);
 					
+					//I want to change infoTemplate so that it only displays field with values
                     var infoTemplate = new esri.InfoTemplate("${Name}", "${*}"); //infoTemplate is used to show the information about a theater when it is clicked on the map
                    //var legend = document.getElementById("legendDiv");
 					//legend.innerHTML = "";
@@ -293,7 +287,6 @@
 					for (var i=0; i<nameList.length; i++) {
 							
 						colorDict[nameList[i]] = colors[i];
-						//this changes the shapes with the color...how to seperate them?
 						shapeDict[typeList[i]] = shapes[i];
 						
 						//legend.innerHTML +='<input type="button" disabled="disabled" id="legendDiv" style="size:5px;background-color:'+htmlColors[i]+';">'+nameList[i]+'</input><br>';
@@ -343,7 +336,7 @@
 					//queryPane.setAttribute('selected',false);
 					queryLegendContainer.selectChild(legendPane);
 					
-					for (key in symbol){
+					for (key in symbol){ //I don't really understand what this does, but I don't think it works without it?
 						symbol[key];
 						
 					}
