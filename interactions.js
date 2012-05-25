@@ -256,7 +256,7 @@
 			In the first case, the submitQuery() function is the caller of this function. 
 			In the second case, the caller is  onTimeExtentChange event of the time slider. So, the relevant portion of the code is inside initSlider.
 			This function gathers information from the input checkboxes on the webpage, and constructs a query string from the information gathered.
-			
+			It also handles  legends.
 			*/
 			
             function ConstructQuery(){
@@ -276,6 +276,10 @@
 					var nodelist = document.getElementsByName(attributeList[j]);
 					
 					var tempQuery = "";			
+					/*
+					The following codes are relavant to legends.
+					
+					*/
 					if (dijit.byId(attributeList[j]).checked) {	//query all in a specific category
 						for (var i=0; i<nodelist.length; i++) {
 							tempQuery += sqlNameList[j] + " = '" + nodelist[i].value+"' OR ";
@@ -326,6 +330,7 @@
 										legend.innerHTML +='<img src="unknownTypeIcon.jpg"/> '+nodelist[i].value+'<br>';
 									}
 								}
+							
 								tempQuery += sqlNameList[j] + " = '" + nodelist[i].value+"' OR ";
 							}
 						}
@@ -351,13 +356,25 @@
 
 				return querySQL;			
 			}
-			
+			/*
+				The callback function of onclick event of "Submit Query" button.
+				Basically, it just calls two helper functions: ConstructQuery and executeQuery. The functionalities of these two functions are self-explanatory.
+				
+			*/
 			function submitQuery() { //executes the SQL query
 	
 				executeQuery(ConstructQuery());
 				queryChanged = true;
 			}
 
+			
+			/*
+			This function creates a symbol for legend. Depending on which style has been determined to use in constructQuery, this function
+			creates a corresponding shape.
+			
+			
+			*/
+			
 			function makeSymbol(color, style) { //constructs markers for the map in different colors and shapes. We should add code to change size based in seating
 				var symbol = new esri.symbol.SimpleMarkerSymbol();
 				if (style == 'CIRCLE'){
@@ -375,6 +392,13 @@
 				return symbol;
 			}
 			
+			
+			/*
+			This function accepts a SQL string as its parameter. 
+			It creates a QueryTask object and sends the query to the server.
+			Then it gets a response. This function also processes the returned results from the server.
+			
+			*/
             function executeQuery(querySQL){
 				map.graphics.clear();
 				var queryTask, query;
@@ -403,9 +427,17 @@
 					//alert(str);
 					
 					//I want to change infoTemplate so that it only displays field with values
-                    var infoTemplate = new esri.InfoTemplate("${Name}", "${*}"); //infoTemplate is used to show the information about a theater when it is clicked on the map
+                    
+					//WHY THIS PORTION OF CODE LOOKS LIKE A DEPULICATE?
+					//IS THIS PORTION STILL USED?
+					
+					
+					var infoTemplate = new esri.InfoTemplate("${Name}", "${*}"); //infoTemplate is used to show the information about a theater when it is clicked on the map
                    //var legend = document.getElementById("legendDiv");
 					//legend.innerHTML = "";
+					
+					
+					
 					var colors=[[27,158,119,0.75],[217,95,2,0.75],[117,112,179,0.75],[0,255,0,0.5],[173,255,47,0.5],[160,32,240,0.5],[0,100,0,0.5],[255,20,147,0.5]];
 					var htmlColors =["rgb(27,158,119)","rgb(217,95,2)","rgb(117,112,179)","rgb(0,255,0)","rgb(173,255,47)","rgb(160,32,240)","rgb(0,100,0)","rgb(255,20,147)"];
 					var shapes = ['CIRCLE', 'DIAMOND', 'SQUARE'];
@@ -466,14 +498,20 @@
 					}
                 });
             }
-
+			/*
+			This function handles tab change. It iscalled when the "Back to Query" button is hit. 
+			*/
             function changeTab(id){
 				var selectedPane = dijit.byId(id);
 				var queryLegendContainer = dijit.byId("QueryLegendPane");
 				queryLegendContainer.selectChild(selectedPane);
 			
 			}
-
+			/*
+			The following function is related to the  "SIZE" part of the Query.
+			Basically, it processes the relevant input data. 
+			It returns a string as a part of query used.
+			*/
             function addSize(){
 					
 					var boo = document.getElementById("menu_Size").style;
