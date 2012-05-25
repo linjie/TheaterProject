@@ -40,18 +40,22 @@
 			}
 		/*
 			This is the callback function when the web page is loaded. 		
-		
+			First, it loads the map layer.
+			Second, it initializes the time slider.
 		*/
 			function init(){
                 // load the map
 
                 map = new esri.Map("mapPane", {"logo":false});
 				var legendLayers = []; //we don't ever use this list, and as far as I can tell our map only has one layer
+				// We hope to create legends directly on the server side, but this might not happen.
 				
                 var basemapURL = "https://arcgis.its.carleton.edu/ArcGIS/rest/services/ItalyTheaters/MapServer";
                 var basemap = new esri.layers.ArcGISDynamicMapServiceLayer(basemapURL);
                 map.addLayer(basemap);			
 			
+			
+				/*The default time slider time range is from -500 to 500.*/
 				var timeExtent = new esri.TimeExtent();
 				timeExtent.startTime = new Date(0,0,1);
 				timeExtent.startTime.setFullYear('-500');
@@ -62,6 +66,11 @@
 
 				
 			}
+			/*
+			This function initializes the time slider. It accepts an object of esri.TimeExtent class as
+			its input paramter.
+			
+			*/
 			
 			function initSlider(timeExtent) {
 				//alert(dojo.byId("timesliderDiv"));
@@ -108,9 +117,12 @@
                 query.returnGeometry = true;
                 query.outFields = ["Name","Style", "Type","Province","Town","Cavea_2","Seating_2", "Date_early", "Date_late"];
          
-                var infoTemplate = new esri.InfoTemplate("${Name}", "${*}"); 
+                var infoTemplate = new esri.InfoTemplate("${Name}", "${*}");  // select all information when using *.
+				
+				// two color lists.
 				var colors=[[27,158,119,0.75],[217,95,2,0.75],[117,112,179,0.75],[0,255,0,0.5],[173,255,47,0.5],[160,32,240,0.5],[0,100,0,0.5],[255,20,147,0.5]];
 				var htmlColors =["rgb(27,158,119)","rgb(217,95,2)","rgb(117,112,179)","rgb(0,255,0)","rgb(173,255,47)","rgb(160,32,240)","rgb(0,100,0)","rgb(255,20,147)"];
+				
 				var shapes = ['CIRCLE', 'DIAMOND', 'SQUARE'];
 				var colorDict = {};
 				var shapeDict = {};
@@ -203,14 +215,19 @@
 						
 				});
 				
-				
-				
+
 				
 			}
 			
+			/*
+			This function updates the time slider when the user inputs the start yeat and end year.
+			To update the time slider, it first creates a new TimeExtent object and destroys the old time slider.
+			Then it calls the initSlider() function with the new TimeExtent object.
 			
+			
+			*/
 			function updateSlider() {
-				map.graphics.clear();
+				map.graphics.clear(); // clear symbols on the map.
 				queryChanged = true;
 				var startYear = dojo.byId('start_year').value;
 				var endYear = dojo.byId('end_year').value;
@@ -234,7 +251,13 @@
 				
 			}
 			
+			/*
+			This function is called when the submit query button is hit or when the time slider changes.
+			In the first case, the submitQuery() function is the caller of this function. 
+			In the second case, the caller is  onTimeExtentChange event of the time slider. So, the relevant portion of the code is inside initSlider.
+			This function gathers information from the input checkboxes on the webpage, and constructs a query string from the information gathered.
 			
+			*/
 			
             function ConstructQuery(){
 			var legend = document.getElementById("legendDiv");
